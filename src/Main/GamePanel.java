@@ -1,16 +1,20 @@
 package Main;
+import Entity.Player;
+import Tile.TileManager;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class GamePanel extends JPanel implements Runnable{
     // SCREEN SETTINGS
     final int originalTileSize = 32;//32x32 tile
-    final int scale = 1;
-    final int tileSize = originalTileSize * scale; //64x64 tile //lo que se ve en la pantalla
-    final int maxScreenCol = 40;
-    final int maxScreenRow = 30;
-    final int screenWidth = tileSize * maxScreenCol; //1920 pixeles ANCHO
-    final int screenHeight = tileSize * maxScreenRow;//1024 pixeles ALTO
+    public final int scale = 5;
+    public final int tileSize = originalTileSize * scale; //64x64 tile //lo que se ve en la pantalla
+
+    public final int maxScreenCol = 10;
+    public final int maxScreenRow = 6;
+    final int screenWidth = 320 * scale;
+    final int screenHeight = 180 * scale;
     //CAMBIANDO las settins puedo modificar la resolucion del juego al gusto
     //basicamente es dividir la pantalla en tiles
 
@@ -19,11 +23,8 @@ public class GamePanel extends JPanel implements Runnable{
 
     KeyHandler keyH = new KeyHandler();
     Thread gameThread;
-
-    // Set player's default position
-    int playerX = 100;
-    int playerY = 100;
-    int playerSpeed = 3;
+    Player player = new Player(this, keyH);
+    TileManager tileManager = new TileManager(this);
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -69,26 +70,14 @@ public class GamePanel extends JPanel implements Runnable{
     }
 
     public void update(){
-        if(keyH.upPressed){
-            playerY -= playerSpeed;
-        }
-        if(keyH.downPressed){
-            playerY += playerSpeed;
-        }
-        if(keyH.leftPressed){
-            playerX -= playerSpeed;
-        }
-        if(keyH.rightPressed){
-            playerX += playerSpeed;
-        }
+        player.update();
     }
     public void paintComponent(Graphics g){
         super.paintComponent(g);
-
         Graphics2D g2 = (Graphics2D)g;
-        g2.setColor(Color.white);
-        g2.fillRect(playerX, playerY, tileSize, tileSize);
-        g2.setColor(Color.darkGray);
+        tileManager.draw(g2);
+        player.draw(g2);
+//        g2.setColor(Color.darkGray);
 //       for(int i = 0 ; i<maxScreenCol ; i++){
 //            g2.drawLine(i*tileSize, 0, i*tileSize, screenHeight);
 //       }

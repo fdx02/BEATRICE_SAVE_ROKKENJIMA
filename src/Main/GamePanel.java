@@ -8,13 +8,13 @@ import java.awt.*;
 public class GamePanel extends JPanel implements Runnable{
     // SCREEN SETTINGS
     final int originalTileSize = 32;//32x32 tile
-    public final int scale = 5;
+    public final int scale = 2;
     public final int tileSize = originalTileSize * scale; //64x64 tile //lo que se ve en la pantalla
 
     public final int maxScreenCol = 10;
     public final int maxScreenRow = 6;
-    final int screenWidth = 320 * scale;
-    final int screenHeight = 180 * scale;
+    public final int screenWidth = 320 * scale;
+    public final int screenHeight = 180 * scale;
     //CAMBIANDO las settins puedo modificar la resolucion del juego al gusto
     //basicamente es dividir la pantalla en tiles
 

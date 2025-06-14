@@ -24,11 +24,13 @@ public class Player extends Entity {
         getPlayerImage();
     }
     public void setDefaultValues(){
-        x = 100;
-        y = 100;
+        x = (gp.screenWidth / 10);
+        y = (gp.screenHeight / 6) * 3;
         speed = 3 * gp.scale/2;
         direction = "idleR";
         lastDirection = "right";
+        int s1 = gp.screenWidth;
+        int s2 = gp.screenHeight;
     }
     public void getPlayerImage(){
         try{
@@ -135,7 +137,6 @@ public class Player extends Entity {
         }
 
         g2.drawImage(image, x, y, 32 * gp.scale, 39 * gp.scale, null);
-
     }
 }
 

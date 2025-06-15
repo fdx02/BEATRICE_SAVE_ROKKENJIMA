@@ -52,7 +52,6 @@ public class Player extends Entity {
             e.printStackTrace();
         }
     }
-    //TODO ACTUALIZAR TODO CON LO DEL CHAT (SWTICH CASE MEJOR) (SACAR 900000 IF) (MEJORAR ANIMACION) (ETC)
     public void update(){
         boolean wasMoving = !keyH.isIdle();
         if(keyH.upPressed){

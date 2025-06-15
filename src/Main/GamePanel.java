@@ -8,7 +8,7 @@ import java.awt.*;
 public class GamePanel extends JPanel implements Runnable{
     // SCREEN SETTINGS
     final int originalTileSize = 32;//32x32 tile
-    public final int scale = 5;
+    public final int scale = 4;
     public final int tileSize = originalTileSize * scale; //64x64 tile //lo que se ve en la pantalla
 
     public final int maxScreenCol = 10;
@@ -18,12 +18,21 @@ public class GamePanel extends JPanel implements Runnable{
     //CAMBIANDO las settins puedo modificar la resolucion del juego al gusto
     //basicamente es dividir la pantalla en tiles
 
+    // WORLD SETTINGS
+    // CAMBIAR DESPUES POSIBLEMENTE, SI QUIERO QUE EL PERSONAJE SE MUEVA POR PANTALLAS Y NO CON LA CAMARA
+    public final int maxWorldCol = 40;
+    public final int maxWorldRow = 6;
+    public final int worldWidth= screenWidth * 4;
+    public final int worldHeight = screenHeight;
+
+
+
     //FPS
     int FPS = 60;
 
     KeyHandler keyH = new KeyHandler();
     Thread gameThread;
-    Player player = new Player(this, keyH);
+    public Player player = new Player(this, keyH);
     TileManager tileManager = new TileManager(this);
 
     public GamePanel() {
@@ -77,13 +86,13 @@ public class GamePanel extends JPanel implements Runnable{
         Graphics2D g2 = (Graphics2D)g;
         tileManager.draw(g2);
         player.draw(g2);
-//        g2.setColor(Color.darkGray);
-//       for(int i = 0 ; i<maxScreenCol ; i++){
-//            g2.drawLine(i*tileSize, 0, i*tileSize, screenHeight);
-//       }
-//       for(int i = 0 ; i<maxScreenRow ; i++){
-//            g2.drawLine(0, i*tileSize, screenWidth, i*tileSize);
-//       }
+        g2.setColor(Color.darkGray);
+       for(int i = 0 ; i<maxScreenCol ; i++){
+            g2.drawLine(i*tileSize, 0, i*tileSize, screenHeight);
+       }
+       for(int i = 0 ; i<maxScreenRow ; i++){
+            g2.drawLine(0, i*tileSize, screenWidth, i*tileSize);
+       }
 
        g2.dispose();
     }

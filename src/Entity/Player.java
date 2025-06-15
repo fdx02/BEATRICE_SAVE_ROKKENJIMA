@@ -12,6 +12,10 @@ import java.util.Objects;
 public class Player extends Entity {
     GamePanel gp;
     KeyHandler keyH;
+
+    public final int screenX;
+    public final int screenY;
+
     public String direction;
     public String lastDirection;
     public BufferedImage idleR1, idleR2, idleR3, idleL1, idleL2, idleL3, right1, right2, right3,right4, left1, left2, left3,left4;
@@ -20,12 +24,20 @@ public class Player extends Entity {
     public Player(GamePanel GP, KeyHandler KEYH) {
         this.gp = GP;
         this.keyH = KEYH;
+
+        //SCREENX y SCREENY hacen que el personaje este siempre al centro de la pantalla, y lo que se mueve es el mapa al rededor del personaje cuando se mueve
+        //TODO cambiar como funciona todo esto para que en lugar de que se mueva la camara, yo quiero que se mueva con pantallas
+        //aunque no se, capaz puede ser un juego medio "mundo abierto" en el que vas por los lugares matando bichos y tenes que conseguir ciertos items
+        //para despues matar al boss?
+        screenX = gp.screenWidth/2 - (16 * gp.scale);
+        screenY = gp.screenHeight/2 - (19 * gp.scale);
+
         setDefaultValues();
         getPlayerImage();
     }
     public void setDefaultValues(){
-        x = (gp.screenWidth / 10);
-        y = (gp.screenHeight / 6) * 3;
+        worldX = gp.screenWidth/2 - (16 * gp.scale);
+        worldY = gp.screenHeight/2 - (19 * gp.scale);
         speed = 3 * gp.scale/2;
         direction = "idleR";
         lastDirection = "right";
@@ -56,21 +68,21 @@ public class Player extends Entity {
         boolean wasMoving = !keyH.isIdle();
         if(keyH.upPressed){
             direction = lastDirection;
-            y -= speed;
+            worldY -= speed;
         }
         if(keyH.downPressed){
             direction = lastDirection;
-            y += speed;
+            worldY += speed;
         }
         if(keyH.leftPressed){
             direction = "left";
             lastDirection = direction;
-            x -= speed;
+            worldX -= speed;
         }
         if(keyH.rightPressed){
             direction = "right";
             lastDirection = direction;
-            x += speed;
+            worldX += speed;
         }
         if(!wasMoving) {
             if(lastDirection.equals("left")) {
@@ -135,7 +147,7 @@ public class Player extends Entity {
                 break;
         }
 
-        g2.drawImage(image, x, y, 32 * gp.scale, 39 * gp.scale, null);
+        g2.drawImage(image, screenX, worldY, 32 * gp.scale, 39 * gp.scale, null);
     }
 }
 

@@ -13,8 +13,9 @@ public class Player extends Entity {
     GamePanel gp;
     KeyHandler keyH;
 
-    public final int screenX;
-    public final int screenY;
+    //public final int screenX;
+    //public final int screenY;
+
 
     public String direction;
     public String lastDirection;
@@ -29,20 +30,21 @@ public class Player extends Entity {
         //TODO cambiar como funciona todo esto para que en lugar de que se mueva la camara, yo quiero que se mueva con pantallas
         //aunque no se, capaz puede ser un juego medio "mundo abierto" en el que vas por los lugares matando bichos y tenes que conseguir ciertos items
         //para despues matar al boss?
-        screenX = gp.screenWidth/2 - (16 * gp.scale);
-        screenY = gp.screenHeight/2 - (19 * gp.scale);
+
+
+        //screenX = gp.screenWidth/2 - (16 * gp.scale);
+        //screenY = gp.screenHeight/2 - (19 * gp.scale);
 
         setDefaultValues();
         getPlayerImage();
     }
     public void setDefaultValues(){
-        worldX = gp.screenWidth/2 - (16 * gp.scale);
-        worldY = gp.screenHeight/2 - (19 * gp.scale);
+        mapaActual = 0;
+        x = gp.screenWidth/2 - (16 * gp.scale);
+        y = gp.screenHeight/2 - (19 * gp.scale);
         speed = 3 * gp.scale/2;
         direction = "idleR";
         lastDirection = "right";
-        int s1 = gp.screenWidth;
-        int s2 = gp.screenHeight;
     }
     public void getPlayerImage(){
         try{
@@ -68,21 +70,21 @@ public class Player extends Entity {
         boolean wasMoving = !keyH.isIdle();
         if(keyH.upPressed){
             direction = lastDirection;
-            worldY -= speed;
+            y -= speed;
         }
         if(keyH.downPressed){
             direction = lastDirection;
-            worldY += speed;
+            y += speed;
         }
         if(keyH.leftPressed){
             direction = "left";
             lastDirection = direction;
-            worldX -= speed;
+            x -= speed;
         }
         if(keyH.rightPressed){
             direction = "right";
             lastDirection = direction;
-            worldX += speed;
+            x += speed;
         }
         if(!wasMoving) {
             if(lastDirection.equals("left")) {
@@ -105,8 +107,29 @@ public class Player extends Entity {
                 spriteCounter = 0;
             }
         }
-
-
+        if(x > 320 * gp.scale){
+            if (mapaActual == 0){
+                mapaActual = 1;
+                x = 0;
+            } else if (mapaActual == 1){
+                mapaActual = 2;
+                x = 0;
+            } else if (mapaActual == 2){
+                mapaActual = 3;
+                x = 0;
+            }
+        } else if (x < 0){
+            if (mapaActual == 3){
+                mapaActual = 2;
+                x = 320 * gp.scale;
+            } else if (mapaActual == 2){
+                mapaActual = 1;
+                x = 320 * gp.scale;
+            } else if (mapaActual == 1){
+                mapaActual = 0;
+                x = 320 * gp.scale;
+            }
+        }
     }
     public void draw(Graphics2D g2){
         BufferedImage image = null;
@@ -146,8 +169,11 @@ public class Player extends Entity {
                 };
                 break;
         }
-
-        g2.drawImage(image, screenX, worldY, 32 * gp.scale, 39 * gp.scale, null);
+        g2.setColor(Color.BLUE);
+        g2.drawString("Posicion X : " + x, 100, 100);
+        g2.drawString("Mapa Actual : " + mapaActual, 100, 120);
+        g2.setColor(null);
+        g2.drawImage(image, x, y, 32 * gp.scale, 39 * gp.scale, null);
     }
 }
 

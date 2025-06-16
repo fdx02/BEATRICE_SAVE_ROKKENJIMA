@@ -12,46 +12,55 @@ public class TileManager {
     Tile[] tiles;
     int[][] tileMap1;
 
+    //intento mio
+    String[] mapasTxt;
+    int[][][] tileMaps;
+
     public TileManager(GamePanel GP) {
         this.gp = GP;
         tiles = new Tile[18];
+
         tileMap1 = new int[gp.maxWorldRow][gp.maxWorldCol];
         getTileImage();
         loadMap("/maps/world.txt");
+
+        mapasTxt = new String[4];
+        for (int i = 0; i < mapasTxt.length; i++) {
+            mapasTxt[i] = "/maps/map0"+ (i+1) +".txt";
+        }
+
+        tileMaps = new int[4][gp.maxWorldRow][gp.maxWorldCol];
+        loadMaps(mapasTxt);
     }
-    public void loadMap(String MAP){
-        //TODO
-        //hay un problema y es que el piso se esta dibujando despues que la pared, entonces parte del piso queda escondido por atras de la pared
-        //posible solucion: hacer 2 mapas distintos, y dibujar uno despues que el otro
-        try{
-            InputStream is = getClass().getResourceAsStream(MAP);
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            for (int row = 0; row < gp.maxWorldRow; row++){
-                String line = br.readLine();
-                if (line == null) break;
-                String[] numbers = line.split(" ");
-                for (int col = 0; col< gp.maxWorldCol; col++){
-                    tileMap1[row][col] = Integer.parseInt(numbers[col]);
+
+    //intento mio vamoooos allaaaaaaaa
+    public void loadMaps(String[] MAPAS){
+        for (int i = 0; i < MAPAS.length; i++) {
+            int[][] mapaTemp = new int[gp.maxScreenRow][gp.maxScreenCol];
+            try{
+                InputStream is = getClass().getResourceAsStream(MAPAS[i]);
+                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                for (int row = 0; row < gp.maxScreenRow; row++){
+                    String line = br.readLine();
+                    if (line == null) break;
+                    String[] numbers = line.split(" ");
+                    for (int col = 0; col< gp.maxScreenCol; col++){
+                        mapaTemp[row][col] = Integer.parseInt(numbers[col]);
+                    }
                 }
+                br.close();
+            } catch (Exception e){
+                e.printStackTrace();
             }
-            br.close();
-        } catch (Exception e){
-            e.printStackTrace();
+            tileMaps[i] = mapaTemp;
         }
     }
     public void draw(Graphics2D g2){
-        for (int row = 0; row< gp.maxWorldRow; row++){
-            for (int col = 0; col< gp.maxWorldCol; col++){
-                int tileNum = tileMap1[row][col];
-                int worldX = col * gp.tileSize;
-                int worldY = row * gp.tileSize;
-                int screenX = worldX - gp.player.worldX + gp.player.screenX;
-                int screenY = worldY - gp.player.worldY + gp.player.screenY;
-                if (worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
-                    worldX - gp.tileSize < gp.player.worldX + gp.player.screenX){
-                    if (tileNum >= 0 && tileNum < tiles.length && tiles[tileNum] != null){
-                        g2.drawImage(tiles[tileNum].image, screenX, row * gp.tileSize, gp.tileSize, gp.tileSize, null);
-                    }
+        for (int row = 0; row< gp.maxScreenRow; row++){
+            for (int col = 0; col< gp.maxScreenCol; col++){
+                int tileNum = tileMaps[gp.player.mapaActual][row][col];
+                if (tileNum >= 0 && tileNum < tiles.length && tiles[tileNum] != null){
+                    g2.drawImage(tiles[tileNum].image, col * gp.tileSize, row * gp.tileSize, gp.tileSize, gp.tileSize, null);
                 }
             }
         }
@@ -113,6 +122,58 @@ public class TileManager {
             tiles[17] = new Tile();
             tiles[17].image = ImageIO.read(getClass().getResourceAsStream("/tiles/Piso.png"));
         } catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public void drawV2(Graphics2D g2){
+        for (int row = 0; row< gp.maxWorldRow; row++){
+            for (int col = 0; col< gp.maxWorldCol; col++){
+                int tileNum = tileMap1[row][col];
+//                int worldX = col * gp.tileSize;
+//                int worldY = row * gp.tileSize;
+//                int screenX = worldX - gp.player.worldX + gp.player.screenX;
+//                int screenY = worldY - gp.player.worldY + gp.player.screenY;
+//                if (worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
+//                    worldX - gp.tileSize < gp.player.worldX + gp.player.screenX){}
+                if (tileNum >= 0 && tileNum < tiles.length && tiles[tileNum] != null){
+                    g2.drawImage(tiles[tileNum].image, col * gp.tileSize, row * gp.tileSize, gp.tileSize, gp.tileSize, null);
+                }
+            }
+        }
+    }
+
+
+
+    public void loadMap(String MAP){
+        //TODO
+        //hay un problema y es que el piso se esta dibujando despues que la pared, entonces parte del piso queda escondido por atras de la pared
+        //posible solucion: hacer 2 mapas distintos, y dibujar uno despues que el otro
+        try{
+            InputStream is = getClass().getResourceAsStream(MAP);
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            for (int row = 0; row < gp.maxWorldRow; row++){
+                String line = br.readLine();
+                if (line == null) break;
+                String[] numbers = line.split(" ");
+                for (int col = 0; col< gp.maxWorldCol; col++){
+                    tileMap1[row][col] = Integer.parseInt(numbers[col]);
+                }
+            }
+            br.close();
+        } catch (Exception e){
             e.printStackTrace();
         }
     }

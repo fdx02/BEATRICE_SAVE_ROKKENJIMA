@@ -6,42 +6,37 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GamePanel extends JPanel implements Runnable{
-    // SCREEN SETTINGS
-    final int originalTileSize = 32;//32x32 tile
-    public final int scale = 4;
-    public final int tileSize = originalTileSize * scale; //64x64 tile //lo que se ve en la pantalla
+    final int originalTileSize = 32;
+    public final int scale = 3;
+    public final int tileSize = originalTileSize * scale;
+    public final int maxScreenCol = 16;
+    public final int maxScreenRow = 12;
+    public final int screenWidth = 512 * scale;
+    public final int screenHeight = 384 * scale;
 
-    public final int maxScreenCol = 10;
-    public final int maxScreenRow = 6;
-    public final int screenWidth = 320 * scale;
-    public final int screenHeight = 180 * scale;
-    //CAMBIANDO las settins puedo modificar la resolucion del juego al gusto
-    //basicamente es dividir la pantalla en tiles
-
-    // WORLD SETTINGS
-    // CAMBIAR DESPUES POSIBLEMENTE, SI QUIERO QUE EL PERSONAJE SE MUEVA POR PANTALLAS Y NO CON LA CAMARA
-    public final int maxWorldCol = 40;
-    public final int maxWorldRow = 6;
-    public final int worldWidth= screenWidth * 4;
-    public final int worldHeight = screenHeight;
-
-
-
-    //FPS
+    // FPS
     int FPS = 60;
 
-    KeyHandler keyH = new KeyHandler();
     Thread gameThread;
-    public Player player = new Player(this, keyH);
+    KeyHandler keyH = new KeyHandler();
     TileManager tileManager = new TileManager(this);
+    public CollisionManager collisionManager = new CollisionManager(this);
+    public Player player = new Player(this, keyH);
+    //res -> 512 x 384
 
-    public GamePanel() {
+    // WORLD SETTINGS
+    public final int maxWorldCol = 16 * scale;
+    public final int maxWorldRow = 12 * scale;
+    public final int worldWidth = tileSize * maxWorldCol;
+    public final int worldHeight = tileSize * maxWorldRow;
+
+    public GamePanel(){
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
-        this.setBackground(Color.black);
-        //setDoubleBuffered hace algo para que tenga mejor performance el juego al dibujar cosas
+        this.setBackground(Color.GRAY);
         this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
         this.setFocusable(true);
+        startGameThread();
     }
 
     public void startGameThread(){
@@ -57,43 +52,47 @@ public class GamePanel extends JPanel implements Runnable{
         long currentTime;
         long timer = 0;
         int drawCount = 0;
-
         while(gameThread != null){
             currentTime = System.nanoTime();
             delta += (currentTime - lastTime) / drawInterval;
             timer += (currentTime - lastTime);
             lastTime = currentTime;
-
-            if (delta >=1) {
+            if (delta >= 1) {
                 update();
                 repaint();
                 delta--;
                 drawCount++;
             }
-            if (timer >= 1000000000){
+            if (timer >= 1000000000) {
                 System.out.println("FPS: " + drawCount);
-                drawCount = 0;
                 timer = 0;
+                drawCount = 0;
             }
+
         }
     }
-
     public void update(){
         player.update();
     }
+
     public void paintComponent(Graphics g){
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D)g;
-        tileManager.draw(g2);
-        player.draw(g2);
-        g2.setColor(Color.darkGray);
-       for(int i = 0 ; i<maxScreenCol ; i++){
-            g2.drawLine(i*tileSize, 0, i*tileSize, screenHeight);
-       }
-       for(int i = 0 ; i<maxScreenRow ; i++){
-            g2.drawLine(0, i*tileSize, screenWidth, i*tileSize);
-       }
+        Graphics2D g2 = (Graphics2D) g;
 
-       g2.dispose();
+
+
+        tileManager.drawBG(g2);
+        tileManager.drawFG(g2);
+        //collisionManager.drawCollisions(g2);
+        player.draw(g2);
+
+        g2.setColor(Color.darkGray);
+//        for (int i = 0; i < maxScreenRow; i++){
+//            g2.drawLine(0, i * tileSize, screenWidth, i * tileSize);
+//        }
+//        for (int i = 0; i < maxScreenCol; i++){
+//            g2.drawLine(i * tileSize,0 , i * tileSize, screenHeight);
+//        }
+        g2.dispose();
     }
 }

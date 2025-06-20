@@ -1,9 +1,17 @@
 package Entity;
-public class Entity {
-    public int x,y;
-    public int speed;
-    public int mapaActual;
 
-    public int spriteCounter = 0;
-    public int spriteNum = 1;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+
+public class Entity {
+    public int worldX,worldY;
+    public int speed;
+    public String animation;
+    public String direction;
+    public int spriteNum, spriteNumIdle;
+    public int spriteCounter;
+    public String status;
+    public int idleCounter;
+    public Rectangle hitbox;
+    public boolean collisionOn = false;
 }

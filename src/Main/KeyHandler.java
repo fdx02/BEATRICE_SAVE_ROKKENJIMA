@@ -4,10 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
-
     public boolean upPressed, downPressed, leftPressed, rightPressed;
-    public int lastDirection;
-
     @Override
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
@@ -19,11 +16,9 @@ public class KeyHandler implements KeyListener {
         }
         if (code == KeyEvent.VK_A) {
             leftPressed = true;
-            lastDirection = KeyEvent.VK_A;
         }
         if (code == KeyEvent.VK_D) {
             rightPressed = true;
-            lastDirection = KeyEvent.VK_D;
         }
     }
 
@@ -43,12 +38,13 @@ public class KeyHandler implements KeyListener {
             rightPressed = false;
         }
     }
+    public boolean isMoving(){
+        return upPressed || downPressed || leftPressed || rightPressed;
+    }
 
     @Override
     public void keyTyped(KeyEvent e) {
+
     }
 
-    public boolean isIdle() {
-        return !upPressed && !downPressed && !leftPressed && !rightPressed;
-    }
 }

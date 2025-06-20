@@ -10,171 +10,137 @@ import java.io.InputStreamReader;
 public class TileManager {
     GamePanel gp;
     Tile[] tiles;
-    int[][] tileMap1;
+    int[][] tileMapBG;
+    int[][] tileMapFG;
+    public int[][] collisionMap;
+    final int scale;
+    final int tileSize;
+    static final int tileVacia = 9;
 
-    //intento mio
-    String[] mapasTxt;
-    int[][][] tileMaps;
-
-    public TileManager(GamePanel GP) {
-        this.gp = GP;
-        tiles = new Tile[18];
-
-        tileMap1 = new int[gp.maxWorldRow][gp.maxWorldCol];
+    public TileManager(GamePanel gp){
+        this.gp = gp;
+        tiles = new Tile[9];
+        tileMapBG = new int[gp.maxWorldRow][gp.maxWorldCol];
+        tileMapFG = new int[gp.maxWorldRow][gp.maxWorldCol];
+        collisionMap = new int[gp.maxWorldRow][gp.maxWorldCol];
+        scale = gp.scale;
+        tileSize = gp.tileSize;
         getTileImage();
-        loadMap("/maps/world.txt");
-
-        mapasTxt = new String[4];
-        for (int i = 0; i < mapasTxt.length; i++) {
-            mapasTxt[i] = "/maps/map0"+ (i+1) +".txt";
-        }
-
-        tileMaps = new int[4][gp.maxWorldRow][gp.maxWorldCol];
-        loadMaps(mapasTxt);
-    }
-
-    //intento mio vamoooos allaaaaaaaa
-    public void loadMaps(String[] MAPAS){
-        for (int i = 0; i < MAPAS.length; i++) {
-            int[][] mapaTemp = new int[gp.maxScreenRow][gp.maxScreenCol];
-            try{
-                InputStream is = getClass().getResourceAsStream(MAPAS[i]);
-                BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                for (int row = 0; row < gp.maxScreenRow; row++){
-                    String line = br.readLine();
-                    if (line == null) break;
-                    String[] numbers = line.split(" ");
-                    for (int col = 0; col< gp.maxScreenCol; col++){
-                        mapaTemp[row][col] = Integer.parseInt(numbers[col]);
-                    }
-                }
-                br.close();
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-            tileMaps[i] = mapaTemp;
-        }
-    }
-    public void draw(Graphics2D g2){
-        for (int row = 0; row< gp.maxScreenRow; row++){
-            for (int col = 0; col< gp.maxScreenCol; col++){
-                int tileNum = tileMaps[gp.player.mapaActual][row][col];
-                if (tileNum >= 0 && tileNum < tiles.length && tiles[tileNum] != null){
-                    g2.drawImage(tiles[tileNum].image, col * gp.tileSize, row * gp.tileSize, gp.tileSize, gp.tileSize, null);
-                }
-            }
-        }
+        loadBG();
+        loadFG();
+        loadCollisions();
     }
     public void getTileImage(){
         try{
-            //ALFOMBRA -> 0
-            tiles[0] = new Tile();
-            tiles[0].image = ImageIO.read(getClass().getResourceAsStream("/tiles/Alfombra.png"));
-            //PARED LIMPIA -> 1
-            tiles[1] = new Tile();
-            tiles[1].image = ImageIO.read(getClass().getResourceAsStream("/tiles/Pared.png"));
-            //PARED LEFT -> 2
-            tiles[2] = new Tile();
-            tiles[2].image = ImageIO.read(getClass().getResourceAsStream("/tiles/ParedLeft.png"));
-            //PARED RIGHT -> 3
-            tiles[3] = new Tile();
-            tiles[3].image = ImageIO.read(getClass().getResourceAsStream("/tiles/ParedRight.png"));
-            //PARED UP -> 4
-            tiles[4] = new Tile();
-            tiles[4].image = ImageIO.read(getClass().getResourceAsStream("/tiles/ParedUp.png"));
-            //PARED DOWN -> 5
-            tiles[5] = new Tile();
-            tiles[5].image = ImageIO.read(getClass().getResourceAsStream("/tiles/ParedDown.png"));
-            //PARED ESQ ABAJO IZQ -> 6
-            tiles[6] = new Tile();
-            tiles[6].image = ImageIO.read(getClass().getResourceAsStream("/tiles/ParedEsqDownLeft.png"));
-            //PARED ESQ ABAJO DER -> 7
-            tiles[7] = new Tile();
-            tiles[7].image = ImageIO.read(getClass().getResourceAsStream("/tiles/ParedEsqDownRight.png"));
-            //PARED ESQ ARRIBA DER -> 8
-            tiles[8] = new Tile();
-            tiles[8].image = ImageIO.read(getClass().getResourceAsStream("/tiles/ParedEsqUpRight.png"));
-            //PARED ESQ ARRIBA IZQ -> 9
-            tiles[9] = new Tile();
-            tiles[9].image = ImageIO.read(getClass().getResourceAsStream("/tiles/ParedEsqUpLeft.png"));
-            //VENTANA ESQ ARRIBA IZQ -> 10
-            tiles[10] = new Tile();
-            tiles[10].image = ImageIO.read(getClass().getResourceAsStream("/tiles/VentanaUpLeft.png"));
-            //VENTANA ESQ ARRIBA DER -> 11
-            tiles[11] = new Tile();
-            tiles[11].image = ImageIO.read(getClass().getResourceAsStream("/tiles/VentanaUpRight.png"));
-            //VENTANA ESQ ABAJO IZQ -> 12
-            tiles[12] = new Tile();
-            tiles[12].image = ImageIO.read(getClass().getResourceAsStream("/tiles/VentanaDownLeft.png"));
-            //VENTANA ESQ ABAJO DER -> 13
-            tiles[13] = new Tile();
-            tiles[13].image = ImageIO.read(getClass().getResourceAsStream("/tiles/VentanaDownRight.png"));
-            //PASTO -> 14
-            tiles[14] = new Tile();
-            tiles[14].image = ImageIO.read(getClass().getResourceAsStream("/tiles/Pasto.png"));
-            //PISO DE LADRILLOS -> 15
-            tiles[15] = new Tile();
-            tiles[15].image = ImageIO.read(getClass().getResourceAsStream("/tiles/PisoLadrillo.png"));
-            //TIERRA -> 16
-            tiles[16] = new Tile();
-            tiles[16].image = ImageIO.read(getClass().getResourceAsStream("/tiles/Tierra.png"));
-            //PISO BALDOSA -> 17
-            tiles[17] = new Tile();
-            tiles[17].image = ImageIO.read(getClass().getResourceAsStream("/tiles/Piso.png"));
-        } catch(IOException e){
+            // tiles[9] TILE VACIO --!!!!!!!!!!!!!!! -> variable static
+
+            tiles[0] = new Tile(ImageIO.read(getClass().getResourceAsStream("/tiles/Pasto.png")), false);
+
+            tiles[1] = new Tile(ImageIO.read(getClass().getResourceAsStream("/tiles/PastoFlor.png")), false);
+
+            tiles[2] = new Tile(ImageIO.read(getClass().getResourceAsStream("/tiles/Agua.png")), false);
+
+            tiles[3] = new Tile(ImageIO.read(getClass().getResourceAsStream("/tiles/Arena.png")), false);
+
+            tiles[4] = new Tile(ImageIO.read(getClass().getResourceAsStream("/tiles/Tierra.png")), false);
+
+            tiles[5] = new Tile(ImageIO.read(getClass().getResourceAsStream("/tiles/PisoLadrillo.png")), false);
+
+            tiles[6] = new Tile(ImageIO.read(getClass().getResourceAsStream("/tiles/Piso.png")), false);
+
+            tiles[7] = new Tile(ImageIO.read(getClass().getResourceAsStream("/tiles/Bush.png")), true, 4,3);
+
+            tiles[8] = new Tile(ImageIO.read(getClass().getResourceAsStream("/tiles/Arbol.png")), true, 2,3);
+
+//            tiles[1] = new Tile();
+//            tiles[1].image = ImageIO.read(getClass().getResourceAsStream("/tiles/PastoFlor.png"));
+
+        }catch (IOException e){
             e.printStackTrace();
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-    public void drawV2(Graphics2D g2){
-        for (int row = 0; row< gp.maxWorldRow; row++){
-            for (int col = 0; col< gp.maxWorldCol; col++){
-                int tileNum = tileMap1[row][col];
-//                int worldX = col * gp.tileSize;
-//                int worldY = row * gp.tileSize;
-//                int screenX = worldX - gp.player.worldX + gp.player.screenX;
-//                int screenY = worldY - gp.player.worldY + gp.player.screenY;
-//                if (worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
-//                    worldX - gp.tileSize < gp.player.worldX + gp.player.screenX){}
-                if (tileNum >= 0 && tileNum < tiles.length && tiles[tileNum] != null){
-                    g2.drawImage(tiles[tileNum].image, col * gp.tileSize, row * gp.tileSize, gp.tileSize, gp.tileSize, null);
-                }
-            }
-        }
+    public void loadBG(){
+        loadMap("/maps/mapaBG.txt", tileMapBG);
+    }
+    public void loadFG(){
+        loadMap("/maps/mapaFG.txt", tileMapFG);
+    }
+    public void loadCollisions(){
+        loadMap("/maps/collisionMap.txt", collisionMap);
     }
 
-
-
-    public void loadMap(String MAP){
-        //TODO
-        //hay un problema y es que el piso se esta dibujando despues que la pared, entonces parte del piso queda escondido por atras de la pared
-        //posible solucion: hacer 2 mapas distintos, y dibujar uno despues que el otro
+    public void loadMap(String filePath, int[][] matriz){
         try{
-            InputStream is = getClass().getResourceAsStream(MAP);
+            InputStream is = getClass().getResourceAsStream(filePath);
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            for (int row = 0; row < gp.maxWorldRow; row++){
+            for (int i = 0; i < gp.maxWorldRow; i++){
                 String line = br.readLine();
-                if (line == null) break;
                 String[] numbers = line.split(" ");
-                for (int col = 0; col< gp.maxWorldCol; col++){
-                    tileMap1[row][col] = Integer.parseInt(numbers[col]);
+                for (int j = 0; j < gp.maxWorldCol; j++){
+                    int num = Integer.parseInt(numbers[j]);
+                    matriz[i][j] = num;
                 }
             }
-            br.close();
         } catch (Exception e){
-            e.printStackTrace();
+                e.printStackTrace();
         }
     }
+    public void drawBG(Graphics2D g2) {
+        for (int i = 0; i < gp.maxWorldRow; i++) {
+            for (int j = 0; j < gp.maxWorldCol; j++) {
+                int num = tileMapBG[i][j];
+                if (num >= 0 && num != tileVacia) {
+                    int worldY = i * tileSize;
+                    int worldX = j * tileSize;
+                    int screenY = worldY - gp.player.worldY + gp.player.screenY;
+                    int screenX = worldX - gp.player.worldX + gp.player.screenX;
+                    int tileWidth = tiles[num].width * tileSize;
+                    int tileHeight = tiles[num].height * tileSize;
+
+
+                    if (worldX + tileWidth > gp.player.worldX - gp.player.screenX &&
+                        worldX - tileWidth < gp.player.worldX + gp.player.screenX &&
+                        worldY + tileHeight > gp.player.worldY - gp.player.screenY &&
+                        worldY - tileHeight < gp.player.worldY + gp.player.screenY) {
+                            g2.drawImage(tiles[num].image, screenX, screenY, tileWidth, tileHeight, null);
+                    }
+                }
+            }
+        }
+    }
+
+    public void drawFG(Graphics2D g2) {
+        for (int i = 0; i < gp.maxWorldRow; i++) {
+            for (int j = 0; j < gp.maxWorldCol; j++) {
+                int num = tileMapFG[i][j];
+                if (num >= 0 && num != tileVacia) {
+                    int worldY = i * tileSize;
+                    int worldX = j * tileSize;
+                    int screenY = worldY - gp.player.worldY + gp.player.screenY;
+                    int screenX = worldX - gp.player.worldX + gp.player.screenX;
+                    int tileWidth = tiles[num].width * tileSize;
+                    int tileHeight = tiles[num].height * tileSize;
+
+
+                    if (worldX + tileWidth > gp.player.worldX - gp.player.screenX &&
+                        worldX - tileWidth < gp.player.worldX + gp.player.screenX &&
+                        worldY + tileHeight > gp.player.worldY - gp.player.screenY &&
+                        worldY - tileHeight < gp.player.worldY + gp.player.screenY) {
+                            g2.drawImage(tiles[num].image, screenX, screenY, tileWidth, tileHeight, null);
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
 }

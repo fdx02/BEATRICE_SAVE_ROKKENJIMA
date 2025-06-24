@@ -3,6 +3,7 @@ package Tile;
 public class CollisionTile {
     public int width = 1;
     public int height = 1;
+    public boolean active = true;
     public CollisionTile(){
 
     }

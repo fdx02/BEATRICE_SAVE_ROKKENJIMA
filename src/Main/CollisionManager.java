@@ -26,6 +26,7 @@ public class CollisionManager {
 
 
         int tileNum1, tileNum2;
+        CollisionTile tile1, tile2;
         switch (entity.direction){
             case "up":
                 if ( /* OUT OF BOUNDS ARRIBA*/entityTopWorldY - entity.speed <= 0){

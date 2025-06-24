@@ -1,6 +1,6 @@
 package Entity;
 import Main.*;
-
+import Item.*;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -19,7 +19,15 @@ public class Player extends Entity {
     public final int screenY;
     int movementX;
     int movementY;
+    int dinero;
+    int ataque;
+    int salud;
+    int spriteCounterIdle;
+    int velocidadAnimacion;
 
+    //COSAS DE DEBUG
+    private static final Font DEBUG_FONT = new Font("Courier New", Font.BOLD, 18);
+    private static final Color DEBUG_COLOR = new Color(255, 255, 255, 200); // Blanco semitransparente
 
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -37,9 +45,16 @@ public class Player extends Entity {
         this.worldX = 23*gp.tileSize;
         this.worldY = 18*gp.tileSize;
         this.speed = 2*scale;
+        this.dinero = 0;
+        this.ataque = 5;
+        this.salud = 100;
         status = "idle";
         direction = "idle";
         lastDirection = "right";
+        this.velocidadAnimacion = 12;
+        spriteCounterIdle = 0;
+        spriteCounter = 0;
+        spriteNumIdle = 1;
     }
 
     public void update(){
@@ -101,21 +116,32 @@ public class Player extends Entity {
             }
         }
 
+        // CHEQUEO DE COLISIONES CON ITEMS
+        Item temp = gp.itemManager.checkItemCollision(this);
+        checkItem(temp);
+
+
         spriteCounter++;
+        spriteCounterIdle++;
         if (keyH.isMoving()) {
             if (idleCounter < 120){
-                if (spriteCounter > 12) {
+                if (spriteCounter > velocidadAnimacion) {
                     spriteNum = (spriteNum % 4) + 1;
                     spriteCounter = 0;
+                    spriteCounterIdle = 0;
                     spriteNumIdle = 3;
                 }
             }
         } else {
             spriteNum = 1;
-            if (Objects.equals(status, "idle") && spriteCounter > 85) {
+            if (Objects.equals(status, "idle") && spriteCounterIdle > 85) {
                 spriteNumIdle = (spriteNumIdle % 3) + 1;
                 spriteCounter = 0;
+                spriteCounterIdle = 0;
             }
+        }
+        if (keyH.oPressed){
+            setDefaultValues();
         }
 
         //reseteo
@@ -184,18 +210,9 @@ public class Player extends Entity {
         g2.setColor(Color.WHITE);
         g2.drawImage(image,screenX, screenY, 32 * scale, 40*scale, null);
 
-//        g2.setColor(Color.BLUE);
-//        g2.fillRect(screenX +hitbox.x, screenY + hitbox.y, hitbox.width , hitbox.height);
 
-        g2.setColor(Color.RED);
-        g2.drawString("State: " + status, screenX, screenY - 10);
-//        g2.drawString("Anim: " + animation, screenX, screenY - 20);
-//        g2.drawString("Anim: " + animation, screenX, screenY - 20);
-        g2.drawString("WorldX: " + worldX, screenX, screenY - 20);
-        g2.drawString("WorldY: " + worldY, screenX, screenY - 30);
-//        g2.drawString("SpriteNum: " + spriteNum, screenX, screenY - 30);
-        g2.drawString("Collision: " + collisionOn, screenX, screenY - 40);
 
+        drawDebugInfo(g2);
 
 
     }
@@ -227,6 +244,48 @@ public class Player extends Entity {
         } catch (IOException e){
             e.printStackTrace();
         }
+    }
+
+    public void checkItem(Item item){
+        if (item != null){
+            if(item.nombre == "Machete"){
+                this.ataque += 3;
+            } else if (item.nombre == "Te") {
+                this.salud += 15;
+            } else if (item.nombre == "Oro") {
+                this.dinero += 10;
+            } else if (item.nombre == "Mariposa") {
+                this.speed += 1 * scale;
+                this.velocidadAnimacion -= 2;
+            }
+        }
+    }
+
+    public void drawDebugInfo(Graphics2D g2) {
+        // Guardar configuración original
+        Font originalFont = g2.getFont();
+        Color originalColor = g2.getColor();
+
+        // Configurar estilo de debug
+        g2.setFont(DEBUG_FONT);
+        g2.setColor(DEBUG_COLOR);
+
+        g2.setColor(Color.RED);
+        g2.drawString("State: " + status, screenX, screenY - 15);
+        g2.drawString("WorldX: " + worldX, screenX, screenY - 30);
+        g2.drawString("WorldY: " + worldY, screenX, screenY - 45);
+        g2.drawString("Collision: " + collisionOn, screenX, screenY - 60);
+        g2.drawString("Velocidad: " + speed, screenX, screenY - 75);
+        g2.drawString("Vida: " + salud, screenX, screenY - 90);
+        g2.drawString("Ataque: " + ataque, screenX, screenY - 105);
+        g2.drawString("$: " + dinero, screenX, screenY - 120);
+
+        g2.setColor(Color.BLUE);
+        g2.fillRect(screenX +hitbox.x, screenY + hitbox.y, hitbox.width , hitbox.height);
+
+        // Restaurar configuración original
+        g2.setFont(originalFont);
+        g2.setColor(originalColor);
     }
 }
 

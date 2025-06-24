@@ -1,6 +1,7 @@
 package Main;
-import Entity.Player;
-import Tile.TileManager;
+import Entity.*;
+import Item.*;
+import Tile.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,6 +22,7 @@ public class GamePanel extends JPanel implements Runnable{
     KeyHandler keyH = new KeyHandler();
     TileManager tileManager = new TileManager(this);
     public CollisionManager collisionManager = new CollisionManager(this);
+    public ItemManager itemManager = new ItemManager(this);
     public Player player = new Player(this, keyH);
     //res -> 512 x 384
 
@@ -73,6 +75,7 @@ public class GamePanel extends JPanel implements Runnable{
     }
     public void update(){
         player.update();
+        itemManager.update();
     }
 
     public void paintComponent(Graphics g){
@@ -82,6 +85,7 @@ public class GamePanel extends JPanel implements Runnable{
 
 
         tileManager.drawBG(g2);
+        itemManager.draw(g2);
         tileManager.drawFG(g2);
         //collisionManager.drawCollisions(g2);
         player.draw(g2);

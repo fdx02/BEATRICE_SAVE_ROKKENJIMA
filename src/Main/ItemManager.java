@@ -93,4 +93,9 @@ public class ItemManager {
         item[2] = new ITEM_Oro();
         item[3] = new ITEM_Te();
     }
+
+    public void resetItems(){
+        loadMap("/maps/mapaItems.txt", tileMapItems);
+        timerItems = 0;
+    }
 }

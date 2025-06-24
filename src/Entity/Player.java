@@ -19,9 +19,10 @@ public class Player extends Entity {
     public final int screenY;
     int movementX;
     int movementY;
-    int dinero;
-    int ataque;
-    int salud;
+    public int oro;
+    public int machete;
+    public int te;
+    public int mariposa;
     int spriteCounterIdle;
     int velocidadAnimacion;
     int sonidoCaminarCounter;
@@ -44,15 +45,17 @@ public class Player extends Entity {
     }
 
     public void setDefaultValues(){
-        this.worldX = 23*gp.tileSize;
-        this.worldY = 18*gp.tileSize;
+        this.worldX = 23*gp.tileSize + 36;
+        this.worldY = 17*gp.tileSize + 20;
         this.speed = 2*scale;
-        this.dinero = 0;
-        this.ataque = 5;
-        this.salud = 100;
+        this.oro = 0;
+        this.machete = 0;
+        this.te = 0;
+        this.mariposa = 0;
         status = "idle";
         direction = "idle";
         lastDirection = "right";
+        animation = "idleRight";
         this.velocidadAnimacion = 12;
         spriteCounterIdle = 0;
         spriteCounter = 0;
@@ -151,8 +154,8 @@ public class Player extends Entity {
         }
         if (keyH.oPressed){
             setDefaultValues();
+            gp.itemManager.resetItems();
         }
-
         //reseteo
         movementX = 0;
         movementY = 0;
@@ -221,7 +224,7 @@ public class Player extends Entity {
 
 
 
-        drawDebugInfo(g2);
+        //drawDebugInfo(g2);
 
 
     }
@@ -229,16 +232,17 @@ public class Player extends Entity {
     public void checkItem(Item item){
         if (item != null){
             if(item.nombre == "Machete"){
-                this.ataque += 3;
+                this.machete++;
                 gp.playSoundEffect(5);
             } else if (item.nombre == "Te") {
-                this.salud += 15;
+                this.te++;
                 gp.playSoundEffect(1);
             } else if (item.nombre == "Oro") {
-                this.dinero += 10;
+                this.oro++;
                 gp.playSoundEffect(2);
             } else if (item.nombre == "Mariposa") {
                 this.speed += 1 * scale;
+                this.mariposa++;
                 this.velocidadAnimacion -= 2;
                 gp.playSoundEffect(6);
             }
@@ -272,9 +276,6 @@ public class Player extends Entity {
         g2.drawString("WorldY: " + worldY, screenX, screenY - 45);
         g2.drawString("Collision: " + collisionOn, screenX, screenY - 60);
         g2.drawString("Velocidad: " + speed, screenX, screenY - 75);
-        g2.drawString("Vida: " + salud, screenX, screenY - 90);
-        g2.drawString("Ataque: " + ataque, screenX, screenY - 105);
-        g2.drawString("$: " + dinero, screenX, screenY - 120);
 
         g2.setColor(Color.BLUE);
         g2.fillRect(screenX +hitbox.x, screenY + hitbox.y, hitbox.width , hitbox.height);

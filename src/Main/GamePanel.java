@@ -23,8 +23,10 @@ public class GamePanel extends JPanel implements Runnable{
     public TileManager tileManager = new TileManager(this);
     public CollisionManager collisionManager = new CollisionManager(this);
     public ItemManager itemManager = new ItemManager(this);
-    public SoundManager soundManager = new SoundManager();
+    public SoundManager BGM = new SoundManager();
+    public SoundManager SE = new SoundManager();
     public Player player = new Player(this, keyH);
+    public UI ui = new UI(this);
     //res -> 512 x 384
 
     // WORLD SETTINGS
@@ -91,6 +93,7 @@ public class GamePanel extends JPanel implements Runnable{
         tileManager.drawFG(g2);
         //collisionManager.drawCollisions(g2);
         player.draw(g2);
+        ui.draw(g2);
 
         g2.setColor(Color.darkGray);
 //        for (int i = 0; i < maxScreenRow; i++){
@@ -103,15 +106,15 @@ public class GamePanel extends JPanel implements Runnable{
     }
 
     public void playMusic(int i){
-        soundManager.setFile(i);
-        soundManager.play();
-        soundManager.loop();
+        BGM.setFile(i);
+        BGM.play();
+        BGM.loop();
     }
     public void stopMusic(){
-        soundManager.stop();
+        BGM.stop();
     }
     public void playSoundEffect(int i){
-        soundManager.setFile(i);
-        soundManager.play();
+        SE.setFile(i);
+        SE.play();
     }
 }

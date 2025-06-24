@@ -1,4 +1,5 @@
 package Tile;
+import Entity.Entity;
 import Main.*;
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -111,23 +112,38 @@ public class TileManager {
         }
     }
 
+    public String checkTerreno(Entity entity){
+        int tileX = (entity.worldX + entity.hitbox.x + (entity.hitbox.width/2)) / tileSize;
+        int tileY = (entity.worldY + entity.hitbox.y + (entity.hitbox.height/2)) / tileSize;
+        if (tileMapBG[tileY][tileX] != tileVacia) {
+            int tileNum = tileMapBG[tileY][tileX];
+            return tiles[tileNum].terreno;
+        }
+        return null;
+    }
+
     public void getTileImage(){
         try{
             // tiles[9] TILE VACIO --!!!!!!!!!!!!!!! -> variable static
 
             tiles[0] = new Tile(ImageIO.read(getClass().getResourceAsStream("/tiles/Pasto.png")), false);
+            tiles[0].setTerreno("pasto");
 
             tiles[1] = new Tile(ImageIO.read(getClass().getResourceAsStream("/tiles/PastoFlor.png")), false);
+            tiles[1].setTerreno("pasto");
 
             tiles[2] = new Tile(ImageIO.read(getClass().getResourceAsStream("/tiles/Agua.png")), false);
 
             tiles[3] = new Tile(ImageIO.read(getClass().getResourceAsStream("/tiles/Arena.png")), false);
+            tiles[3].setTerreno("pasto");
 
             tiles[4] = new Tile(ImageIO.read(getClass().getResourceAsStream("/tiles/Tierra.png")), false);
 
             tiles[5] = new Tile(ImageIO.read(getClass().getResourceAsStream("/tiles/PisoLadrillo.png")), false);
+            tiles[5].setTerreno("piedra");
 
             tiles[6] = new Tile(ImageIO.read(getClass().getResourceAsStream("/tiles/Piso.png")), false);
+            tiles[6].setTerreno("piedra");
 
             tiles[7] = new Tile(ImageIO.read(getClass().getResourceAsStream("/tiles/Bush.png")), true, 4,3);
 

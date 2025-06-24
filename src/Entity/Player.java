@@ -24,6 +24,8 @@ public class Player extends Entity {
     int salud;
     int spriteCounterIdle;
     int velocidadAnimacion;
+    int sonidoCaminarCounter;
+    public String terreno;
 
     //COSAS DE DEBUG
     private static final Font DEBUG_FONT = new Font("Courier New", Font.BOLD, 18);
@@ -58,6 +60,7 @@ public class Player extends Entity {
     }
 
     public void update(){
+        terreno = gp.tileManager.checkTerreno(this);
         idleCounter++;
         if (keyH.isMoving()){
             idleCounter = 0;
@@ -83,6 +86,7 @@ public class Player extends Entity {
                 animation = direction;
                 movementX = speed;
             }
+
         } else {
             if (idleCounter > 120 || status.equals("idle")){
                 status = "idle";
@@ -123,6 +127,7 @@ public class Player extends Entity {
 
         spriteCounter++;
         spriteCounterIdle++;
+        sonidoCaminarCounter++;
         if (keyH.isMoving()) {
             if (idleCounter < 120){
                 if (spriteCounter > velocidadAnimacion) {
@@ -131,6 +136,10 @@ public class Player extends Entity {
                     spriteCounterIdle = 0;
                     spriteNumIdle = 3;
                 }
+            }
+            if(sonidoCaminarCounter > 24){
+                sonidoCaminarCounter = 0;
+                sonidoCaminar();
             }
         } else {
             spriteNum = 1;
@@ -217,47 +226,34 @@ public class Player extends Entity {
 
     }
 
-    public void getPlayerImage(){
-        try{
-            idleR1 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceIdleRight1.png"));
-            idleR2 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceIdleRight2.png"));
-            idleR3 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceIdleRight3.png"));
-            idleL1 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceIdleLeft1.png"));
-            idleL2 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceIdleLeft2.png"));
-            idleL3 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceIdleLeft3.png"));
-            right1 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkRight1.png"));
-            right2 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkRight2.png"));
-            right3 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkRight3.png"));
-            right4 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkRight4.png"));
-            left1 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkLeft1.png"));
-            left2 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkLeft2.png"));
-            left3 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkLeft3.png"));
-            left4 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkLeft4.png"));
-            up1 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkUp1.png"));
-            up2 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkUp2.png"));
-            up3 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkUp3.png"));
-            up4 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkUp4.png"));
-            down1 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkDown1.png"));
-            down2 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkDown2.png"));
-            down3 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkDown3.png"));
-            down4 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkDown4.png"));
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
     public void checkItem(Item item){
         if (item != null){
             if(item.nombre == "Machete"){
                 this.ataque += 3;
+                gp.playSoundEffect(5);
             } else if (item.nombre == "Te") {
                 this.salud += 15;
+                gp.playSoundEffect(1);
             } else if (item.nombre == "Oro") {
                 this.dinero += 10;
+                gp.playSoundEffect(2);
             } else if (item.nombre == "Mariposa") {
                 this.speed += 1 * scale;
                 this.velocidadAnimacion -= 2;
+                gp.playSoundEffect(6);
             }
+        }
+    }
+    public void sonidoCaminar(){
+        switch(terreno){
+            case "pasto":
+                gp.playSoundEffect(4);
+                break;
+            case "piedra":
+                gp.playSoundEffect(3);
+                break;
+            case "":
+                break;
         }
     }
 
@@ -286,6 +282,35 @@ public class Player extends Entity {
         // Restaurar configuración original
         g2.setFont(originalFont);
         g2.setColor(originalColor);
+    }
+
+    public void getPlayerImage(){
+        try{
+            idleR1 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceIdleRight1.png"));
+            idleR2 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceIdleRight2.png"));
+            idleR3 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceIdleRight3.png"));
+            idleL1 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceIdleLeft1.png"));
+            idleL2 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceIdleLeft2.png"));
+            idleL3 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceIdleLeft3.png"));
+            right1 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkRight1.png"));
+            right2 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkRight2.png"));
+            right3 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkRight3.png"));
+            right4 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkRight4.png"));
+            left1 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkLeft1.png"));
+            left2 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkLeft2.png"));
+            left3 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkLeft3.png"));
+            left4 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkLeft4.png"));
+            up1 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkUp1.png"));
+            up2 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkUp2.png"));
+            up3 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkUp3.png"));
+            up4 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkUp4.png"));
+            down1 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkDown1.png"));
+            down2 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkDown2.png"));
+            down3 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkDown3.png"));
+            down4 = ImageIO.read(getClass().getResourceAsStream("/player/BeatriceWalkDown4.png"));
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 }
 

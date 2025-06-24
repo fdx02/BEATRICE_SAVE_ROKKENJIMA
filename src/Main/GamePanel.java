@@ -20,9 +20,10 @@ public class GamePanel extends JPanel implements Runnable{
 
     Thread gameThread;
     KeyHandler keyH = new KeyHandler();
-    TileManager tileManager = new TileManager(this);
+    public TileManager tileManager = new TileManager(this);
     public CollisionManager collisionManager = new CollisionManager(this);
     public ItemManager itemManager = new ItemManager(this);
+    public SoundManager soundManager = new SoundManager();
     public Player player = new Player(this, keyH);
     //res -> 512 x 384
 
@@ -54,6 +55,7 @@ public class GamePanel extends JPanel implements Runnable{
         long currentTime;
         long timer = 0;
         int drawCount = 0;
+        playMusic(0);
         while(gameThread != null){
             currentTime = System.nanoTime();
             delta += (currentTime - lastTime) / drawInterval;
@@ -98,5 +100,18 @@ public class GamePanel extends JPanel implements Runnable{
 //            g2.drawLine(i * tileSize,0 , i * tileSize, screenHeight);
 //        }
         g2.dispose();
+    }
+
+    public void playMusic(int i){
+        soundManager.setFile(i);
+        soundManager.play();
+        soundManager.loop();
+    }
+    public void stopMusic(){
+        soundManager.stop();
+    }
+    public void playSoundEffect(int i){
+        soundManager.setFile(i);
+        soundManager.play();
     }
 }
